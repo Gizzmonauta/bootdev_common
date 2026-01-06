@@ -20,3 +20,10 @@ def merge(first, second):
     final += first[i:]
     final += second[j:]
     return final
+
+if __name__ == "__main__":
+    # Example usage
+    sample_list = [38, 27, 43, 3, 9, 82, 10]
+    print("Unsorted list:", sample_list)
+    sorted_list = merge_sort(sample_list)
+    print("Sorted list:", sorted_list)
