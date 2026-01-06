@@ -1,23 +1,23 @@
 from main import *
 import time
 
-run_cases = [([3, 2, 1], [1, 2, 3]), ([5, 4, 3, 2, 1], [1, 2, 3, 4, 5])]
+run_cases = [([4, 3, 2, 1], [1, 2, 3, 4]), ([9, 5, -3, 7], [-3, 5, 7, 9])]
 
 submit_cases = run_cases + [
     ([], []),
-    ([7], [7]),
-    ([4, -7, 1, 0, 5], [-7, 0, 1, 4, 5]),
+    ([1], [1]),
+    ([5, 3, 4, 1, 2], [1, 2, 3, 4, 5]),
+    ([0, -2, -5, 3, 2, 1], [-5, -2, 0, 1, 2, 3]),
     ([9, 8, 7, 6, 5, 4, 3, 2, 1, 0], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-    ([1, 1, 1, 1, 1], [1, 1, 1, 1, 1]),
 ]
 
 
 def test(input1, expected_output):
     print("---------------------------------")
-    print(f"Input: {input1}")
+    print(f"Inputs: {input1}")
     print(f"Expected: {expected_output}")
     start = time.time()
-    result = merge_sort(input1)
+    result = insertion_sort(input1)
     end = time.time()
     timeout = 1.00
     if (end - start) < timeout:
