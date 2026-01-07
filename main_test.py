@@ -1,59 +1,67 @@
-import random
-import time
 from main import *
 
 run_cases = [
-    (10, "Patrick Bateman", "Paul Allen"),
-    (100, "Paul Allen", "Paul Allen"),
-    (1000, "Paul Allen", "Paul Allen"),
-    (10000, "Patrick Bateman", "Paul Allen"),
+    (
+        ["Rick", "Cliff", "Sharon", "Jay", "Roman", "Squeaky"],
+        (["Cliff", "Sharon", "Jay", "Roman", "Squeaky"], "Rick", "Squeaky"),
+    ),
+    (
+        ["Cliff", "Sharon", "Jay", "Roman", "Squeaky"],
+        (["Sharon", "Jay", "Roman", "Squeaky"], "Cliff", "Squeaky"),
+    ),
 ]
 
 submit_cases = run_cases + [
-    (12000, "Paul Allen", "Paul Allen"),
+    ([], ([],)),
+    (["Jay"], ([], "Jay")),
+    (["Roman", "Squeaky"], (["Squeaky"], "Roman", "Squeaky")),
+    (["Squeaky"], ([], "Squeaky")),
 ]
 
 
-def test(num_items, first_item, last_item):
+def test(linked_list, expected_state, expected_head=None, expected_tail=None):
     print("---------------------------------")
-    print(f"Adding {num_items} job candidates to a linked list's head")
-    linked_list = LinkedList()
-    timeout = 1.5
-    start = time.time()
-    for item in get_items(num_items):
-        linked_list.add_to_head(Node(item))
-
-    print(f"Adding {num_items} job candidates to a linked list's tail")
-    linked_list2 = LinkedList()
-    for item in get_items(num_items):
-        linked_list2.add_to_tail(Node(item))
-    end = time.time()
-
-    print(f"Expecting to complete in less than {timeout * 1000} milliseconds")
-    if (end - start) < timeout:
-        print(f"Test completed in less than {timeout * 1000} milliseconds!")
-    else:
+    print(f"Linked List Queue: {linked_list}")
+    print(f"Removing Head...\n")
+    try:
+        head = linked_list.remove_from_head()
+        tail = linked_list.tail
+        result = linked_list_to_list(linked_list)
+        print(f"Expected List: {expected_state}")
+        print(f"  Actual List: {result}\n")
+        if result != expected_state:
+            print("Fail")
+            return False
+        print(f"Expected Removed Head: {expected_head}")
+        print(f"  Actual Removed Head: {head}\n")
+        if not (head == None and expected_head == None) and (head.val != expected_head):
+            print("Fail")
+            return False
+        print(f"Expected Tail: {expected_tail}")
+        print(f"  Actual Tail: {tail}\n")
+        if not (tail == None and expected_tail == None) and (tail.val != expected_tail):
+            print("Fail")
+            return False
+        if head != None:
+            print("Expected Removed Head's Next Node: None")
+            print(f"         Actual Removed Head Next: {head.next}\n")
+            if head.next != None:
+                print("Fail")
+                return False
+        print("Pass")
+        return True
+    except Exception as e:
+        print(f"Exception: {str(e)}")
         print("Fail")
-        print(f"Test took too long ({(end - start) * 1000} milliseconds). Speed it up!")
-        cleanup_list(linked_list)
-        cleanup_list(linked_list2)
         return False
 
-    print("\nChecking the first linked list")
-    if not check_links(linked_list, first_item, last_item, num_items):
-        cleanup_list(linked_list)
-        cleanup_list(linked_list2)
-        return False
-    print("\nChecking the second linked list")
-    if not check_links(linked_list2, last_item, first_item, num_items):
-        cleanup_list(linked_list)
-        cleanup_list(linked_list2)
-        return False
 
-    print("\nPass")
-    cleanup_list(linked_list)
-    cleanup_list(linked_list2)
-    return True
+def linked_list_to_list(linked_list):
+    result = []
+    for node in linked_list:
+        result.append(node.val)
+
+    return result
 
 
 def main():
@@ -61,7 +69,10 @@ def main():
     failed = 0
     skipped = len(submit_cases) - len(test_cases)
     for test_case in test_cases:
-        correct = test(*test_case)
+        linked_list = LLQueue()
+        for item in test_case[0]:
+            linked_list.add_to_tail(Node(item))
+        correct = test(linked_list, *test_case[1])
         if correct:
             passed += 1
         else:
@@ -74,55 +85,6 @@ def main():
         print(f"{passed} passed, {failed} failed, {skipped} skipped")
     else:
         print(f"{passed} passed, {failed} failed")
-
-
-def get_items(num):
-    random.seed(1)
-    options = ["Patrick Bateman", "Paul Allen", "Evelyn Williams", "Luis Carruthers"]
-    items = []
-    for _ in range(num):
-        optionI = random.randint(0, len(options) - 1)
-        items.append(options[optionI])
-    return items
-
-
-def check_links(llist, head, tail, expected_length):
-    print(f"Expected Head: {head}")
-    print(f"Actual Head: {llist.head}")
-    if head != llist.head.val:
-        print("Fail")
-        print("The linked list's head node does not have the expected value")
-        print("Check if nodes added to the head are set as the new head node")
-        return False
-    print(f"Expected Tail: {tail}")
-    print(f"Actual Tail: {llist.tail}")
-    if tail != llist.tail.val:
-        print("Fail")
-        print("The linked list's tail node does not have the expected value")
-        print("Check if nodes added to the tail are set as the new tail node")
-        return False
-
-    actual_length = 0
-    for _ in llist:
-        actual_length += 1
-    print(f"Expected Length: {expected_length}")
-    print(f"Actual Length: {actual_length}")
-    if expected_length != actual_length:
-        print("Fail")
-        print("The linked list is not the expected length of linked nodes")
-        print("Check if added nodes are set as the new head or tail")
-        return False
-    return True
-
-
-def cleanup_list(llist):
-    current = llist.head
-    while current is not None:
-        next_node = current.next
-        current.next = None
-        current = next_node
-    llist.head = None
-    llist.tail = None
 
 
 test_cases = submit_cases

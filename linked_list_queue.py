@@ -12,8 +12,6 @@ class LLQueue:
         removed_head.next = None
         return removed_head
 
-    # don't touch below this line
-
     def add_to_tail(self, node):
         if self.head is None:
             self.head = node
