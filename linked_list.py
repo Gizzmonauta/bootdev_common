@@ -20,8 +20,6 @@ class LinkedList:
         self.head = None
         self.tail = None
 
-    # don't touch below this line
-
     def __iter__(self):
         node = self.head
         while node is not None:
