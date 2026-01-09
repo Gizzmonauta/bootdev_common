@@ -1,4 +1,3 @@
-import random
 from main import *
 from user import *
 
@@ -11,88 +10,42 @@ submit_cases = run_cases + [
 ]
 
 
-def validate_tree_structure(node, tree):
-    """Validate the tree maintains proper BST and parent-child relationships."""
+def count_black_height(node, tree):
+    """Count black nodes from node to any leaf. Returns -1 if inconsistent."""
     if node.val is None:  # nil node
+        return 1
+    
+    left_height = count_black_height(node.left, tree)
+    right_height = count_black_height(node.right, tree)
+    
+    if left_height == -1 or right_height == -1 or left_height != right_height:
+        return -1
+    
+    return left_height + (1 if not node.red else 0)
+
+
+def validate_rb_properties(node, tree):
+    """Validate Red-Black Tree properties."""
+    if node.val is None:
         return True
     
-    # Check parent-child relationships
-    if node.left.val is not None:
-        if node.left.parent != node:
-            return False
-        if not (node.left.val < node.val):
-            return False
-    
-    if node.right.val is not None:
-        if node.right.parent != node:
-            return False
-        if not (node.right.val > node.val):
+    # Property 4: If a node is red, both children must be black
+    if node.red:
+        if (node.left.val is not None and node.left.red) or \
+           (node.right.val is not None and node.right.red):
+            print(f"✗ Red node {node.val} has red child")
             return False
     
-    # Recursively check children
-    return (validate_tree_structure(node.left, tree) and 
-            validate_tree_structure(node.right, tree))
-
-
-def test_rotate(tree, node, direction):
-    print(f"Rotating {direction} at {node.val}...")
-    print("-------------------------------------")
-    print("Tree before rotation:")
-    print("-------------------------------------")
-    print_tree(tree)
-    print("-------------------------------------")
-    
-    if direction == "left":
-        tree.rotate_left(node)
-    else:
-        tree.rotate_right(node)
-    
-    print("Tree after rotation:")
-    print("-------------------------------------")
-    print_tree(tree)
-    print("-------------------------------------")
-    
-    # Validate the tree structure is still valid
-    if not validate_tree_structure(tree.root, tree):
-        print("✗ Tree structure invalid after rotation")
+    # Check BST property
+    if node.left.val is not None and not (node.left.val < node.val):
+        print(f"✗ BST violation: left child {node.left.val} >= parent {node.val}")
         return False
     
-    print("✓ Tree structure valid after rotation")
-    return True
-
-
-def test_rotations(tree):
-    results = []
+    if node.right.val is not None and not (node.right.val > node.val):
+        print(f"✗ BST violation: right child {node.right.val} <= parent {node.val}")
+        return False
     
-    # Test left rotation at root
-    if tree.root.right.val is not None:
-        results.append(test_rotate(tree, tree.root, "left"))
-    else:
-        print("Skipping left rotation at root (no right child)")
-        results.append(True)
-    
-    # Test right rotation at root
-    if tree.root.left.val is not None:
-        results.append(test_rotate(tree, tree.root, "right"))
-    else:
-        print("Skipping right rotation at root (no left child)")
-        results.append(True)
-    
-    # Test left rotation at root.right
-    if tree.root.right.val is not None and tree.root.right.right.val is not None:
-        results.append(test_rotate(tree, tree.root.right, "left"))
-    else:
-        print("Skipping left rotation at root.right")
-        results.append(True)
-    
-    # Test right rotation at root.left
-    if tree.root.left.val is not None and tree.root.left.left.val is not None:
-        results.append(test_rotate(tree, tree.root.left, "right"))
-    else:
-        print("Skipping right rotation at root.left")
-        results.append(True)
-    
-    return all(results)
+    return validate_rb_properties(node.left, tree) and validate_rb_properties(node.right, tree)
 
 
 def test(num_users):
@@ -101,16 +54,63 @@ def test(num_users):
     for user in users:
         tree.insert(user)
     print("=====================================")
-    print("Starting Tree:")
+    print(f"Inserted {num_users} users: {users}")
     print("-------------------------------------")
-    print_tree(tree)
+    print("Tree:")
     print("-------------------------------------")
+    print(print_tree(tree))
+    print("-------------------------------------\n")
 
-    if test_rotations(tree):
+    # Validate RB properties
+    all_valid = True
+    
+    # Property 2: Root is black
+    if tree.root.val is not None and tree.root.red:
+        print("✗ Root is red (should be black)")
+        all_valid = False
+    else:
+        print("✓ Root is black")
+    
+    # Property 4: No red node has red children
+    if not validate_rb_properties(tree.root, tree):
+        all_valid = False
+    else:
+        print("✓ No red node has red children")
+    
+    # Property 5: All paths have same black height
+    black_height = count_black_height(tree.root, tree)
+    if black_height == -1:
+        print("✗ Inconsistent black heights")
+        all_valid = False
+    else:
+        print(f"✓ Consistent black height: {black_height}")
+    
+    # Check in-order traversal is sorted
+    inorder = []
+    def traverse(node):
+        if node.val is not None:
+            traverse(node.left)
+            inorder.append(node.val)
+            traverse(node.right)
+    traverse(tree.root)
+    
+    if inorder == sorted(users):
+        print("✓ In-order traversal is sorted")
+    else:
+        print("✗ In-order traversal not sorted")
+        all_valid = False
+
+    if all_valid:
         print("Pass \n")
         return True
     print("Fail \n")
     return False
+
+
+def print_tree(node):
+    lines = []
+    format_tree_string(node.root, lines)
+    return "\n".join(lines)
 
 
 def format_tree_string(node, lines, level=0):
@@ -124,12 +124,6 @@ def format_tree_string(node, lines, level=0):
             + ("[red]" if node.red else "[black]")
         )
         format_tree_string(node.left, lines, level + 1)
-
-
-def print_tree(node):
-    lines = []
-    format_tree_string(node.root, lines)
-    print("\n".join(lines))
 
 
 def main():
