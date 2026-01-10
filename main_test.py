@@ -1,85 +1,50 @@
-import json
-from main import Trie
+from main import *
 
 run_cases = [
     (
         [
-            "darnit",
-            "nope",
-            "bad",
+            (0, 1),
+            (1, 2),
+            (2, 3),
+            (3, 4),
+            (4, 5),
         ],
-        "This is a d@rn1t test with b@d words!",
-        {
-            "@": "a",
-            "1": "i",
-            "4": "a",
-            "!": "i",
-        },
-        [
-            "b@d",
-            "d@rn1t",
-        ],
+        [6, 7],
     ),
     (
         [
-            "darn",
-            "shoot",
-            "gosh",
+            (1, 2),
+            (1, 3),
         ],
-        "h3ck this fudg!ng thing",
-        {
-            "@": "a",
-            "3": "e",
-        },
-        [],
-    ),
-    (
-        [
-            "dang",
-            "darn",
-            "heck",
-            "gosh",
-        ],
-        "d@ng it to h3ck",
-        {
-            "@": "a",
-            "3": "e",
-        },
-        ["d@ng", "h3ck"],
+        [0, 4],
     ),
 ]
 submit_cases = run_cases + [
     (
         [
-            "darn",
-            "shoot",
-            "fudging",
+            (0, 5),
+            (7, 0),
         ],
-        "sh00t, I hate this fudg!ng assignment",
-        {
-            "@": "a",
-            "3": "e",
-            "0": "o",
-            "!": "i",
-        },
-        ["sh00t", "fudg!ng"],
-    ),
+        [1, 2, 3, 4],
+    )
 ]
 
 
-def test(words, document, variations, expected_matches):
+def test(edges_to_add, expected_vertices):
+    print("=================================")
+    graph = Graph()
+    for edge in edges_to_add:
+        graph.add_edge(edge[0], edge[1])
+        print(f"Added edge: {edge}")
+    for node in expected_vertices:
+        graph.add_node(node)
+        print(f"Added unconnected node: {node}")
     print("---------------------------------")
-    print("Document:")
-    print(document)
-    print(f"Variations: {variations}")
-    print(f"Expected matches: {sorted(expected_matches)}")
     try:
-        trie = Trie()
-        for word in words:
-            trie.add(word)
-        actual = sorted(trie.advanced_find_matches(document, variations))
-        print(f"Actual matches: {actual}")
-        if actual == sorted(expected_matches):
+        unconnected = graph.unconnected_vertices()
+        print(f" - Expecting: {expected_vertices}")
+        print(f" - Actual: {unconnected}")
+        if unconnected == expected_vertices:
             print("Pass \n")
             return True
         print("Fail \n")
