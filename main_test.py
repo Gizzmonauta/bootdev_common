@@ -1,67 +1,76 @@
 from main import *
 
 run_cases = [
-    (
-        [
-            ("New York", "London"),
-            ("New York", "Cairo"),
-            ("New York", "Tokyo"),
-            ("London", "Dubai"),
-        ],
-        "New York",
-        ["New York", "Cairo", "London", "Tokyo", "Dubai"],
-    ),
+    ([[0, 394], [394, 0]], 3458, [0, 1], True),
+    ([[0, 911, 430], [911, 0, 41], [430, 41, 0]], 3104, [1, 2, 0], True),
+    ([[0, 10, 1], [10, 0, 1], [1, 1, 0]], 9, [0, 2, 1], True),
 ]
+
 submit_cases = run_cases + [
     (
         [
-            ("New York", "London"),
-            ("New York", "Cairo"),
-            ("New York", "Tokyo"),
-            ("London", "Dubai"),
-            ("Cairo", "Kyiv"),
-            ("Cairo", "Madrid"),
-            ("London", "Madrid"),
-            ("Buenos Aires", "New York"),
-            ("Tokyo", "Buenos Aires"),
-            ("Kyiv", "San Francisco"),
+            [0, 988, 523, 497],
+            [988, 0, 414, 940],
+            [523, 414, 0, 802],
+            [497, 940, 802, 0],
         ],
-        "New York",
+        1060,
+        [1, 0, 2, 3],
+        False,
+    ),
+    (
         [
-            "New York",
-            "Buenos Aires",
-            "Cairo",
-            "London",
-            "Tokyo",
-            "Kyiv",
-            "Madrid",
-            "Dubai",
-            "San Francisco",
+            [0, 310, 991, 488, 366],
+            [310, 0, 597, 913, 929],
+            [991, 597, 0, 223, 516],
+            [488, 913, 223, 0, 142],
+            [366, 929, 516, 142, 0],
         ],
+        3399,
+        [0, 1, 3, 4, 2],
+        True,
+    ),
+    (
+        [
+            [0, 143, 773, 97, 633, 818],
+            [143, 0, 256, 931, 545, 722],
+            [773, 256, 0, 829, 616, 923],
+            [97, 931, 829, 0, 150, 317],
+            [633, 545, 616, 150, 0, 101],
+            [818, 722, 923, 317, 101, 0],
+        ],
+        1480,
+        [0, 3, 2, 4, 5, 1],
+        False,
     ),
 ]
 
 
-def test(edges_to_add, starting_at, expected_visited):
-    print("=================================")
-    graph = Graph()
-    for edge in edges_to_add:
-        graph.add_edge(edge[0], edge[1])
-        print(f"Added edge: {edge}")
-    print("---------------------------------")
-    try:
-        bfs = graph.breadth_first_search(starting_at)
-        for i, v in enumerate(bfs):
-            print(f"Visiting:  {v}")
-            print(f"Expected:  {expected_visited[i]}")
+def print_matrix(mat):
+    n = len(mat)
+    m = len(mat[0])
+    for i in range(n):
+        print(mat[i])
 
-        if bfs == expected_visited:
+
+def test(paths, dist, actual_path, expected_output):
+    try:
+        print("---------------------------------")
+        print(f"Paths:")
+        print_matrix(paths)
+        print(f"Checking for a path shorter than {dist}")
+        print(f"Using path: {actual_path}")
+        result = verify_tsp(paths, dist, actual_path)
+        print(f"Expected: {expected_output}")
+        print(f"Actual:   {result}")
+        if result == expected_output:
             print("Pass")
             return True
         print("Fail")
         return False
     except Exception as e:
-        print(f"Error: {e}")
+        print("Fail")
+        print(e)
         return False
 
 
