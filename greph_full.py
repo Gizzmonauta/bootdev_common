@@ -2,6 +2,18 @@ class Graph:
     def __init__(self):
         self.graph = {}
 
+    def depth_first_search(self, start_vertex):
+        visited_list = []
+        self.depth_first_search_r(visited_list, start_vertex)
+        return visited_list
+
+    def depth_first_search_r(self, visited, current_vertex):
+        visited.append(current_vertex)
+        sorted_list = sorted(self.graph[current_vertex])
+        for sn in sorted_list:
+            if sn not in visited:
+                self.depth_first_search_r(visited, sn)
+
     def breadth_first_search(self, v):
         if v not in self.graph:
             raise Exception("vertex not in graph")
