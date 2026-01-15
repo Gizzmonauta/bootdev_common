@@ -1,91 +1,92 @@
-from main import bfs_traversal
+from main import Node, is_valid_red_black_tree
+
+
+def describe_tree(root):
+    levels = []
+
+    def walk(node, depth):
+        while len(levels) <= depth:
+            levels.append([])
+        if node is None:
+            levels[depth].append("None")
+            return
+        label = str(node.value) + node.color
+        levels[depth].append(label)
+        if node.left is None and node.right is None:
+            return
+        walk(node.left, depth + 1)
+        walk(node.right, depth + 1)
+
+    walk(root, 0)
+    lines = []
+    for depth in range(len(levels)):
+        line = "Level " + str(depth) + ": " + ", ".join(levels[depth])
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def make_simple_valid_tree():
+    root = Node(10, "B")
+    root.left = Node(5, "R")
+    root.right = Node(15, "R")
+    return root
+
+
+def make_root_red_tree():
+    root = Node(10, "R")
+    root.left = Node(5, "B")
+    root.right = Node(15, "B")
+    return root
+
+
+def make_red_red_child_tree():
+    root = Node(10, "B")
+    root.left = Node(5, "R")
+    root.right = Node(15, "B")
+    root.left.left = Node(2, "R")
+    return root
+
+
+def make_bad_black_height_tree():
+    root = Node(10, "B")
+    root.left = Node(5, "B")
+    root.right = Node(15, "B")
+    root.left.left = Node(2, "R")
+    root.left.right = None
+    root.right.right = Node(20, "R")
+    root.right.right.right = Node(25, "B")
+    return root
+
 
 run_cases = [
-    (
-        "entrance",
-        {
-            "entrance": ["hall", "armory"],
-            "hall": ["kitchen", "library"],
-            "armory": ["treasure"],
-            "kitchen": [],
-            "library": ["treasure"],
-            "treasure": [],
-        },
-        ["entrance", "hall", "armory", "kitchen", "library", "treasure"],
-    ),
-    (
-        "A",
-        {
-            "A": ["B", "C"],
-            "B": ["D"],
-            "C": ["E"],
-            "D": [],
-            "E": [],
-        },
-        ["A", "B", "C", "D", "E"],
-    ),
-    (
-        "A",
-        {
-            "A": ["B"],
-            "B": [],
-            "C": ["D"],
-            "D": [],
-        },
-        ["A", "B"],
-    ),
+    (None, True, "Empty tree"),
+    (make_simple_valid_tree(), True, "Simple valid RB tree"),
 ]
 
 submit_cases = run_cases + [
-    (
-        "start",
-        {
-            "start": ["x", "y"],
-            "x": ["z"],
-            "y": ["z", "w"],
-            "z": [],
-            "w": [],
-        },
-        ["start", "x", "y", "z", "w"],
-    ),
-    (
-        "1",
-        {
-            "1": ["2", "3"],
-            "2": ["4"],
-            "3": ["4", "5"],
-            "4": ["6"],
-            "5": [],
-            "6": [],
-        },
-        ["1", "2", "3", "4", "5", "6"],
-    ),
-    (
-        "hub",
-        {
-            "hub": ["a", "b", "c"],
-            "a": [],
-            "b": ["d"],
-            "c": [],
-            "d": [],
-        },
-        ["hub", "a", "b", "c", "d"],
-    ),
+    (make_root_red_tree(), False, "Root must be black"),
+    (make_red_red_child_tree(), False, "Red node with red child"),
+    (make_bad_black_height_tree(), False, "Mismatched black heights"),
+    (make_simple_valid_tree(), True, "Valid tree again (sanity check)"),
 ]
 
 
-def test(start, graph, expected_output):
+def test(root, expected, label):
     print("---------------------------------")
-    print("Input graph:")
-    for room in graph:
-        print(f"  {room} -> {graph[room]}")
+    print("Case:", label)
+    print("Tree:")
+    if root is None:
+        print("  <empty tree>")
+    else:
+        print(describe_tree(root))
+    result = is_valid_red_black_tree(root)
     print("")
-    print(f"Start room: {start}")
-    result = bfs_traversal(start, graph)
-    print(f"Expected order: {expected_output}")
-    print(f"Actual order:   {result}")
-    if result == expected_output:
+    print("Expected:", expected)
+    print("Actual:  ", result)
+    if result == expected:
+        print("Pass")
         return True
+    print("Fail")
     return False
 
 
@@ -93,22 +94,23 @@ def main():
     passed = 0
     failed = 0
     skipped = len(submit_cases) - len(test_cases)
-    for test_case in test_cases:
-        correct = test(*test_case)
+
+    for root, expected, label in test_cases:
+        correct = test(root, expected, label)
         if correct:
             passed += 1
-            print("Pass")
         else:
             failed += 1
-            print("Fail")
+
     if failed == 0:
         print("============= PASS ==============")
     else:
         print("============= FAIL ==============")
+
     if skipped > 0:
-        print(f"{passed} passed, {failed} failed, {skipped} skipped")
+        print(str(passed) + " passed, " + str(failed) + " failed, " + str(skipped) + " skipped")
     else:
-        print(f"{passed} passed, {failed} failed")
+        print(str(passed) + " passed, " + str(failed) + " failed")
 
 
 test_cases = submit_cases
