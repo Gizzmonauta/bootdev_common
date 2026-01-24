@@ -1,3 +1,30 @@
+"""
+Find the greatest common divisor (GCD) of a list of integers using the Euclidean algorithm.
+Return the GCD multiplied by the number of integers in the list.
+If the list is empty or None, return 0.
+
+The GCD of two integers a and b is the largest integer that divides both a and b without 
+leaving a remainder.
+
+Example:
+- For the list [6, 9, 21], the GCD is 3. Since there are 3 integers in the list, the result
+is 3 * 3 = 9.
+
+The Euxledian Algorithm
+
+(1) Begin with a given pair (a,b) where a <= b. If a < b by doing a % b the modulo operator
+swaps them automátically.
+
+(2) If the two entries of my pair (a,b) are both non-zero:
+    (a) find the remainder of the division by r = a % b
+    (b) Replace (a, b) with (r, a) (Note: r < a)
+    (c) Return to (2)
+
+(3) If not: the non-zero entry of the pair is the gcd
+
+(4) Multiply the gcd by the number of items in the list.
+"""
+
 def solution(lst):
     if not lst:
         return 0
