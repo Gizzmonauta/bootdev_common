@@ -24,7 +24,7 @@ class Graph:
             vis = waiting_queue[0]
             del waiting_queue[0]
             visited_list.append(vis)
-            sorted_list = sorted(self.graph[vis])
+            sorted_list = sorted(self.graph[vis]) # get adjacent nodes
             for sn in sorted_list:
                 if sn not in visited_list and sn not in waiting_queue:
                     waiting_queue.append(sn)
