@@ -1,7 +1,10 @@
 [project]
 name = "bootdev-common"
 version = "0.1.0"
-description = "Add your description here"
+description = "Common utilities for Boot.dev exercises"
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = []
+requires-python = ">=3.13"
+dependencies = [
+    "ipykernel>=7.2.0",
+    "notebook>=7.5.4",
+]
