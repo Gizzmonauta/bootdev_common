@@ -51,16 +51,24 @@ def calc(expression):
     operators = set(['+', '-', '*', '/', '(', ')'])
     tokens = []
     current_token = ''
-    for char in expr:
+    for i in range(len(expr)):
+        char = expr[i]
         if char in operators:
             if current_token:
-                tokens.append(current_token)
+                tokens.append((float(current_token), 'NUMBER'))
                 current_token = ''
-            tokens.append(char)
+            if char == '-' and (i == 0 or expr[i-1] in operators and expr[i-1] != ')'):
+                tokens.append((char, 'UNARY_MINUS'))
+            elif char == '(':
+                tokens.append((char, 'OPEN_PAREN'))
+            elif char == ')':
+                tokens.append((char, 'CLOSE_PAREN'))
+            else:
+                tokens.append((char, 'OPERATOR'))
         else:
             current_token += char
     if current_token:
-        tokens.append(current_token)
+        tokens.append((float(current_token), 'NUMBER'))
 
     return tokens
 
