@@ -47,21 +47,36 @@ Notes
 
 class Employee:
     def __init__(self, name, hours_worked, hourly_rate):
-        pass
+        self.name = name
+        self.hours_worked = hours_worked
+        self.hourly_rate = hourly_rate
 
     def get_pay(self):
-        pass
+        return self.hours_worked * self.hourly_rate
 
     def get_summary(self):
-        pass
+        return f"{self.name} earned {self.get_pay()} coins"
 
 
 class Manager(Employee):
     def __init__(self, name, hours_worked, hourly_rate, bonus):
-        pass
+        super().__init__(name, hours_worked, hourly_rate)
+        self.bonus = bonus
 
     def get_pay(self):
-        pass
+        return super().get_pay() + self.bonus
 
     def get_summary(self):
-        pass
+        return f"Manager {self.name} earned {self.get_pay()} coins"
+    
+def main(): 
+    employee = Employee("Ava", 8, 15)
+    print(employee.get_pay())
+    print(employee.get_summary())
+
+    manager = Manager("Bo", 8, 15, 30)
+    print(manager.get_pay())
+    print(manager.get_summary())
+
+if __name__ == "__main__":
+    main()
